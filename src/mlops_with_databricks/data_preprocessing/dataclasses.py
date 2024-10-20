@@ -1,8 +1,12 @@
+"""Dataclasses for the Ad Click Data."""
+
 from dataclasses import dataclass
 
 
 @dataclass
 class AdClickDataColumns:
+    """Dataclass for the Ad Click Data columns."""
+
     id: str = "id"
     full_name: str = "full_name"
     age: str = "age"
@@ -16,6 +20,8 @@ class AdClickDataColumns:
 
 @dataclass
 class AdClickDataConfig:
+    """Dataclass for the Ad Click Data configuration."""
+
     target: str = AdClickDataColumns.click
     num_features: tuple[str] = (AdClickDataColumns.age,)
     cat_features: tuple[str] = (
