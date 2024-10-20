@@ -37,3 +37,10 @@ ignore = [
 
 [tool.ruff.format]
 indent-style = "space"
+
+[project.scripts]
+hello = "mlops_with_databricks:hello"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
