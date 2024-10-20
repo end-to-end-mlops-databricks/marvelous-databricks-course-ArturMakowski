@@ -20,9 +20,6 @@ jobs:
       - name: Install the dependencies
         run: uv sync
 
-      - name: Install pre-commit
-        run: uv add pre-commit
-
       - name: Run pre-commit checks
         run: |
-          pre-commit run --all-files
+          uv run pre-commit run --all-files
