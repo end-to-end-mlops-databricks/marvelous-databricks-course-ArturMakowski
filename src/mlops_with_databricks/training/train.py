@@ -1,11 +1,13 @@
 # Databricks notebook source
 
+import subprocess
+
 import mlflow
 from lightgbm import LGBMClassifier
 from mlflow.models import infer_signature
 from pyspark.sql import SparkSession
 from sklearn.compose import ColumnTransformer
-from sklearn.metrics import f1_score, precision_score, recall_score, roc_auc_score
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, roc_auc_score
 from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
@@ -15,6 +17,16 @@ from mlops_with_databricks.data_preprocessing.dataclasses import (
     ProcessedAdClickDataConfig,
     light_gbm_config,
 )
+
+
+def get_git_info():
+    try:
+        sha = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode("ascii").strip()
+        branch = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"]).decode("ascii").strip()
+        return {"git_sha": sha, "branch": branch}
+    except Exception:
+        return {"git_sha": "unknown", "branch": "unknown"}
+
 
 mlflow.set_tracking_uri("databricks://dbc-643c4c2b-d6c9")
 mlflow.set_registry_uri("databricks-uc://dbc-643c4c2b-d6c9")  # It must be -uc for registering models to Unity Catalog
@@ -50,7 +62,7 @@ preprocessor = ColumnTransformer(
 )
 
 # Create the pipeline with preprocessing and the LightGBM regressor
-pipeline = Pipeline(steps=[("classifier", LGBMClassifier(**parameters))])
+pipeline = Pipeline(steps=[("onehot", preprocessor), ("classifier", LGBMClassifier(**parameters))])
 
 # Define parameter grid for hyperparameter tuning
 param_grid = {
@@ -60,15 +72,14 @@ param_grid = {
 }
 
 # Perform hyperparameter tuning with GridSearchCV
-grid_search = GridSearchCV(pipeline, param_grid, cv=4, scoring="roc_auc", n_jobs=-1)
+grid_search = GridSearchCV(pipeline, param_grid, cv=4, scoring="f1", n_jobs=-1)
 
 # COMMAND ----------
 mlflow.set_experiment(experiment_name="/Shared/ad-click")
-git_sha = "ffa63b430205ff7"
 
 # Start an MLflow run to track the training process
 with mlflow.start_run(
-    tags={"git_sha": f"{git_sha}", "branch": "week2"},
+    tags=get_git_info(),
 ) as run:
     run_id = run.info.run_id
 
@@ -82,24 +93,25 @@ with mlflow.start_run(
     precision = precision_score(y_test, y_pred)
     recall = recall_score(y_test, y_pred)
     roc_auc = roc_auc_score(y_test, y_pred)
+    accuracy = accuracy_score(y_test, y_pred)
 
     # Log parameters, metrics, and the model to MLflow
     mlflow.log_param("model_type", "LightGBM with preprocessing")
     mlflow.log_params(best_params)
-    mlflow.log_metrics({"f1": f1, "precision": precision, "recall": recall, "roc_auc": roc_auc})
-    signature = infer_signature(model_input=X_train, model_output=y_pred)
+    mlflow.log_metrics({"f1": f1, "accuracy": accuracy, "precision": precision, "recall": recall, "roc_auc": roc_auc})
+    signature = infer_signature(model_input=X_test, model_output=y_pred)
 
     dataset = mlflow.data.from_spark(train_set_spark, table_name=f"{catalog_name}.{schema_name}.train_set", version="0")
     mlflow.log_input(dataset, context="training")
 
-    mlflow.sklearn.log_model(sk_model=pipeline, artifact_path="lightgbm-pipeline-model", signature=signature)
+    mlflow.sklearn.log_model(sk_model=best_pipeline, artifact_path="lightgbm-pipeline-model", signature=signature)
 
 
 # COMMAND ----------
 model_version = mlflow.register_model(
     model_uri=f"runs:/{run_id}/lightgbm-pipeline-model",
     name=f"{catalog_name}.{schema_name}.ad_click_model_basic",
-    tags={"git_sha": f"{git_sha}"},
+    tags=get_git_info(),
 )
 
 # COMMAND ----------

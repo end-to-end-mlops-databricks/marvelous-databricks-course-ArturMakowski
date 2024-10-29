@@ -10,7 +10,6 @@ from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import OneHotEncoder
 
 from mlops_with_databricks.data_preprocessing.dataclasses import AdClickDataColumns, AdClickDataConfig, DatabricksConfig
 
@@ -32,18 +31,11 @@ class DataProcessor:
     def from_pandas(cls, pandas_df: pd.DataFrame) -> "DataProcessor":
         """Create a DataProcessor object from a pandas DataFrame."""
         instance = cls()
-        instance.X = None
-        instance.y = None
-        instance.preprocessor = None
         instance.df = pandas_df
         return instance
 
     def preprocess_data(self) -> None:
-        """Preprocess the data. Fill missing values, cast types, and split features and target.
-
-        Returns:
-            tuple[pd.DataFrame, pd.Series]: Preprocessed features and target.
-        """
+        """Preprocess the data. Fill missing values, cast types, and split features and target."""
         self.df = self.df.drop(columns=[AdClickDataColumns.id, AdClickDataColumns.full_name])
         self.df = self.fill_missing_values(self.df)
         self.df[AdClickDataColumns.browsing_history] = self.df[AdClickDataColumns.browsing_history].str.replace(
@@ -56,17 +48,19 @@ class DataProcessor:
         categorical_transformer = Pipeline(
             steps=[
                 ("imputer", SimpleImputer(strategy="most_frequent")),
-                ("onehot", OneHotEncoder(handle_unknown="ignore", sparse_output=False)),
+                # ("onehot", OneHotEncoder(handle_unknown="ignore", sparse_output=False)),
             ]
         )
 
         self.preprocessor = ColumnTransformer(
             transformers=[
                 ("num", numeric_transformer, list(AdClickDataConfig.num_features)),
-                ("cat", categorical_transformer, list(AdClickDataConfig.cat_features) + [AdClickDataConfig.target]),
+                ("cat", categorical_transformer, list(AdClickDataConfig.cat_features)),
             ]
         ).set_output(transform="pandas")
-        self.df = self.preprocessor.fit_transform(self.df)
+        preprocessed_features = self.preprocessor.fit_transform(self.df)
+        preprocessed_features["click"] = self.df[AdClickDataColumns.click].astype("int64")
+        self.df = preprocessed_features
 
     @staticmethod
     def fill_missing_values(df: pd.DataFrame) -> pd.DataFrame:

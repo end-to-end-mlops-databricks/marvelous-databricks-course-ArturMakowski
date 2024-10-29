@@ -38,27 +38,14 @@ class AdClickDataConfig:
 class ProcessedAdClickDataConfig:
     """Dataclass for the Processed Ad Click Data configuration."""
 
-    target: str = "cat__click_0"
+    target: str = "click"
     num_features: tuple[str] = ("num__age",)
     cat_features: tuple[str] = (
-        "cat__gender_Female",
-        "cat__gender_Male",
-        "cat__gender_Non-Binary",
-        "cat__device_type_Desktop",
-        "cat__device_type_Mobile",
-        "cat__device_type_Tablet",
-        "cat__ad_position_Bottom",
-        "cat__ad_position_Side",
-        "cat__ad_position_Top",
-        "cat__browsing_history_Education",
-        "cat__browsing_history_Entertainment",
-        "cat__browsing_history_News",
-        "cat__browsing_history_Shopping",
-        "cat__browsing_history_Social_Media",
-        "cat__time_of_day_Afternoon",
-        "cat__time_of_day_Evening",
-        "cat__time_of_day_Morning",
-        "cat__time_of_day_Night",
+        "cat__gender",
+        "cat__device_type",
+        "cat__ad_position",
+        "cat__browsing_history",
+        "cat__time_of_day",
     )
 
 
@@ -72,9 +59,9 @@ class DatabricksConfig:
 
 
 class LightGBMConfig(TypedDict):
-    learning_rate: str = 0.001
-    n_estimators: str = 200
-    max_depth: str = 10
+    learning_rate: float
+    n_estimators: int
+    max_depth: int
 
 
 light_gbm_config = LightGBMConfig(learning_rate=0.001, n_estimators=200, max_depth=10)
