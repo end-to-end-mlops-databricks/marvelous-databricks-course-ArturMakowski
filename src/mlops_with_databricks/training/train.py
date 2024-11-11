@@ -28,8 +28,8 @@ def get_git_info():
         return {"git_sha": "unknown", "branch": "unknown"}
 
 
-mlflow.set_tracking_uri("databricks://dbc-643c4c2b-d6c9")
-mlflow.set_registry_uri("databricks-uc://dbc-643c4c2b-d6c9")  # It must be -uc for registering models to Unity Catalog
+mlflow.set_tracking_uri("databricks")
+mlflow.set_registry_uri("databricks-uc")  # It must be -uc for registering models to Unity Catalog
 
 # COMMAND ----------
 

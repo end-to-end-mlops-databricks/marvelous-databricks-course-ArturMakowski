@@ -3,7 +3,7 @@ import json
 
 import mlflow
 
-mlflow.set_tracking_uri("databricks://dbc-643c4c2b-d6c9")
+mlflow.set_tracking_uri("databricks")
 
 mlflow.set_experiment(experiment_name="/Shared/ad-click-basic")
 mlflow.set_experiment_tags({"repository_name": "ad-click"})
