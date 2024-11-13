@@ -1,6 +1,7 @@
 """Dataclasses for the Ad Click Data."""
 
 from dataclasses import dataclass
+from typing import TypedDict
 
 
 @dataclass
@@ -31,3 +32,36 @@ class AdClickDataConfig:
         AdClickDataColumns.browsing_history,
         AdClickDataColumns.time_of_day,
     )
+
+
+@dataclass
+class ProcessedAdClickDataConfig:
+    """Dataclass for the Processed Ad Click Data configuration."""
+
+    target: str = "click"
+    num_features: tuple[str] = ("num__age",)
+    cat_features: tuple[str] = (
+        "cat__gender",
+        "cat__device_type",
+        "cat__ad_position",
+        "cat__browsing_history",
+        "cat__time_of_day",
+    )
+
+
+@dataclass
+class DatabricksConfig:
+    """Dataclass for the Databricks configuration."""
+
+    workspace_url: str = "https://dbc-643c4c2b-d6c9.cloud.databricks.com/"
+    catalog_name: str = "mlops_students"
+    schema_name: str = "armak58"
+
+
+class LightGBMConfig(TypedDict):
+    learning_rate: float
+    n_estimators: int
+    max_depth: int
+
+
+light_gbm_config = LightGBMConfig(learning_rate=0.001, n_estimators=200, max_depth=10)
