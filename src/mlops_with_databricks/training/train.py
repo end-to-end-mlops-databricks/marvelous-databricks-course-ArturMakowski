@@ -1,4 +1,11 @@
 # Databricks notebook source
+# MAGIC %pip install /Volumes/mlops_students/armak58/packages/mlops_with_databricks-0.0.1-py3-none-any.whl
+
+# COMMAND ----------
+
+# MAGIC %restart_python
+
+# COMMAND ----------
 
 import subprocess
 
@@ -113,11 +120,3 @@ model_version = mlflow.register_model(
     name=f"{catalog_name}.{schema_name}.ad_click_model_basic",
     tags=get_git_info(),
 )
-
-# COMMAND ----------
-# run = mlflow.get_run(run_id)
-# dataset_info = run.inputs.dataset_inputs[0].dataset
-# dataset_source = mlflow.data.get_source(dataset_info)
-# dataset_source.load()
-
-# COMMAND ----------

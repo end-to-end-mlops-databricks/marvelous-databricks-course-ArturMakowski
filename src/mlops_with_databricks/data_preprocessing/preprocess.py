@@ -3,8 +3,6 @@
 from pathlib import Path
 
 import pandas as pd
-
-# from databricks.connect import DatabricksSession
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import current_timestamp, to_utc_timestamp
 from sklearn.compose import ColumnTransformer
@@ -49,7 +47,6 @@ class DataProcessor:
         categorical_transformer = Pipeline(
             steps=[
                 ("imputer", SimpleImputer(strategy="most_frequent")),
-                # ("onehot", OneHotEncoder(handle_unknown="ignore", sparse_output=False)),
             ]
         )
 
@@ -128,7 +125,7 @@ class DataProcessor:
 
 
 if __name__ == "__main__":
-    spark = SparkSession.builder.getOrCreate()  # DatabricksSession.builder.profile("dbc-643c4c2b-d6c9").getOrCreate()
+    spark = SparkSession.builder.getOrCreate()
 
     df = spark.read.csv(
         "/Volumes/mlops_students/armak58/data/ad_click_dataset.csv", header=True, inferSchema=True
