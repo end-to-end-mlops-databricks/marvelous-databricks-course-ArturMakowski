@@ -75,10 +75,17 @@ class ModelConfig:
 
 
 @dataclass
-class ServingConfig:
+class FeatureServingConfig:
     """Dataclass for the Serving configuration."""
 
     serving_endpoint_name: str = "ad-click-feature-serving"
+
+
+@dataclass
+class ModelServingConfig:
+    """Dataclass for the Model Serving configuration."""
+
+    serving_endpoint_name: str = "ad-click-model-serving"
 
 
 class LightGBMConfig(TypedDict):

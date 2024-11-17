@@ -37,10 +37,10 @@ from pyspark.sql import SparkSession
 
 from mlops_with_databricks.data_preprocessing.dataclasses import (
     DatabricksConfig,
+    FeatureServingConfig,
     FeatureTableConfig,
     ModelConfig,
     ProcessedAdClickDataConfig,
-    ServingConfig,
 )
 
 spark = SparkSession.builder.getOrCreate()
@@ -69,7 +69,7 @@ feature_table_stem = FeatureTableConfig.feature_table_name
 online_table_stem = FeatureTableConfig.online_table_name
 model_name = ModelConfig.model_name
 model_version = ModelConfig.model_version
-serving_endpoint_name = ServingConfig.serving_endpoint_name
+serving_endpoint_name = FeatureServingConfig.serving_endpoint_name
 
 
 # Define table names
@@ -169,7 +169,6 @@ workspace.serving_endpoints.create(
 # COMMAND ----------
 
 
-
 # COMMAND ----------
 
 token = workspace.dbutils.notebook.entry_point.getDbutils().notebook().getContext().apiToken().get()
@@ -180,7 +179,6 @@ host = spark.conf.get("spark.databricks.workspaceUrl")
 id_list = preds_df["Id"]
 
 # COMMAND ----------
-
 
 
 # COMMAND ----------
