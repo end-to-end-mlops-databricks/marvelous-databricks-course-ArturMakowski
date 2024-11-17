@@ -88,6 +88,17 @@ class ModelServingConfig:
     serving_endpoint_name: str = "ad-click-model-serving"
 
 
+@dataclass
+class ABTestConfig:
+    """Dataclass for the A/B Test configuration."""
+
+    learning_rate_a: float = 0.01
+    learning_rate_b: float = 0.001
+    n_estimators: int = 1000
+    max_depth_a: int = 10
+    max_depth_b: int = 100
+
+
 class LightGBMConfig(TypedDict):
     learning_rate: float
     n_estimators: int

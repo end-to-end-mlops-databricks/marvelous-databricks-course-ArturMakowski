@@ -88,26 +88,6 @@ dataframe_records = [[record] for record in sampled_records]
 
 # COMMAND ----------
 
-"""
-Each body should be list of json with columns
-
-[{'LotFrontage': 78.0,
-  'LotArea': 9317,
-  'OverallQual': 6,
-  'OverallCond': 5,
-  'YearBuilt': 2006,
-  'Exterior1st': 'VinylSd',
-  'Exterior2nd': 'VinylSd',
-  'MasVnrType': 'None',
-  'Foundation': 'PConc',
-  'Heating': 'GasA',
-  'CentralAir': 'Y',
-  'SaleType': 'WD',
-  'SaleCondition': 'Normal'}]
-"""
-
-# COMMAND ----------
-
 start_time = time.time()
 
 model_serving_endpoint = f"https://{host}/serving-endpoints/{serving_endpoint_name}/invocations"

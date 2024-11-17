@@ -15,7 +15,6 @@ you specify the source Delta table.
 This allows the feature spec to be used in both offline and online scenarios.
 For online lookups, the serving endpoint automatically uses the online table to perform low-latency feature lookups.
 The source Delta table and the online table must use the same primary key.
-
 """
 
 import random
@@ -165,10 +164,6 @@ workspace.serving_endpoints.create(
 
 # MAGIC %md
 # MAGIC ## Call The Endpoint
-
-# COMMAND ----------
-
-
 # COMMAND ----------
 
 token = workspace.dbutils.notebook.entry_point.getDbutils().notebook().getContext().apiToken().get()
@@ -177,10 +172,6 @@ host = spark.conf.get("spark.databricks.workspaceUrl")
 # COMMAND ----------
 
 id_list = preds_df["Id"]
-
-# COMMAND ----------
-
-
 # COMMAND ----------
 
 start_time = time.time()
