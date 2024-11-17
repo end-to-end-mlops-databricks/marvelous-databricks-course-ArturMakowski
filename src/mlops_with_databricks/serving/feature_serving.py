@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %pip install /Volumes/mlops_students/armak58/packages/mlops_with_databricks-0.0.1-py3-none-any.whl
+# MAGIC %pip install --force-reinstall "/Volumes/mlops_students/armak58/packages/mlops_with_databricks-0.0.1-py3-none-any.whl[dev]"
 
 # COMMAND ----------
 
@@ -60,8 +60,8 @@ mlflow.set_registry_uri("databricks-uc")
 # COMMAND ----------
 
 # Load config
-num_features = ProcessedAdClickDataConfig.num_features
-cat_features = ProcessedAdClickDataConfig.cat_features
+num_features = list(ProcessedAdClickDataConfig.num_features)
+cat_features = list(ProcessedAdClickDataConfig.cat_features)
 target = ProcessedAdClickDataConfig.target
 catalog_name = DatabricksConfig.catalog_name
 schema_name = DatabricksConfig.schema_name
@@ -127,6 +127,7 @@ spec = OnlineTableSpec(
 online_table_pipeline = workspace.online_tables.create(name=online_table_name, spec=spec)
 
 # COMMAND ----------
+
 # 3. Create feture look up and feature spec table feature table
 
 # Define features to look up from the feature table
@@ -143,6 +144,7 @@ fe.create_feature_spec(name=feature_spec_name, features=features, exclude_column
 # MAGIC ## Deploy Feature Serving Endpoint
 
 # COMMAND ----------
+
 # 4. Create endpoing using feature spec
 
 # Create a serving endpoint for the house prices predictions
@@ -167,6 +169,7 @@ workspace.serving_endpoints.create(
 # COMMAND ----------
 
 
+
 # COMMAND ----------
 
 token = workspace.dbutils.notebook.entry_point.getDbutils().notebook().getContext().apiToken().get()
@@ -177,6 +180,8 @@ host = spark.conf.get("spark.databricks.workspaceUrl")
 id_list = preds_df["Id"]
 
 # COMMAND ----------
+
+
 
 # COMMAND ----------
 
@@ -197,6 +202,7 @@ print("Execution time:", execution_time, "seconds")
 
 
 # COMMAND ----------
+
 # another way to call the endpoint
 
 response = requests.post(
@@ -205,10 +211,13 @@ response = requests.post(
     json={"dataframe_split": {"columns": ["Id"], "data": [["182"]]}},
 )
 
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC ## Load Test
 
 # COMMAND ----------
+
 # Initialize variables
 serving_endpoint = f"https://{host}/serving-endpoints/{serving_endpoint_name}/invocations"
 id_list = preds_df.select("Id").rdd.flatMap(lambda x: x).collect()
