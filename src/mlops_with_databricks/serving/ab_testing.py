@@ -13,7 +13,7 @@ import pandas as pd
 import requests
 from databricks.sdk import WorkspaceClient
 from databricks.sdk.service.serving import EndpointCoreConfigInput, ServedEntityInput
-from lightgbm import LGBMClassifier, LGBMRegressor
+from lightgbm import LGBMClassifier
 from mlflow import MlflowClient
 from mlflow.models import infer_signature
 from pyspark.sql import SparkSession
@@ -139,7 +139,7 @@ with mlflow.start_run(tags={"model_class": "A", "git_sha": git["git_sha"]}) as r
 # COMMAND ----------
 model_version = mlflow.register_model(
     model_uri=f"runs:/{run_id}/lightgbm-pipeline-model",
-    name=f"{catalog_name}.{schema_name}.ad_click_model_basic",
+    name=f"{catalog_name}.{schema_name}.ad_click_model_basic_ab",
     tags=git,
 )
 
@@ -165,7 +165,7 @@ model_A = mlflow.sklearn.load_model(model_uri)
 # COMMAND ----------
 
 # Repeat the training and logging steps for Model B using parameters for B
-pipeline = Pipeline(steps=[("preprocessor", preprocessor), ("regressor", LGBMRegressor(**parameters_b))])
+pipeline = Pipeline(steps=[("onehot", preprocessor), ("classifier", LGBMClassifier(**parameters_b))])
 
 # Start MLflow run to track training of Model A
 with mlflow.start_run(tags={"model_class": "B", "git_sha": git["git_sha"]}) as run:
@@ -197,7 +197,7 @@ with mlflow.start_run(tags={"model_class": "B", "git_sha": git["git_sha"]}) as r
 # COMMAND ----------
 model_version = mlflow.register_model(
     model_uri=f"runs:/{run_id}/lightgbm-pipeline-model",
-    name=f"{catalog_name}.{schema_name}.ad_click_model_basic",
+    name=f"{catalog_name}.{schema_name}.ad_click_model_basic_ab",
     tags=git,
 )
 
@@ -231,14 +231,16 @@ class AdClickModelWrapper(mlflow.pyfunc.PythonModel):
 
     def predict(self, context, model_input):
         if isinstance(model_input, pd.DataFrame):
-            house_id = str(model_input["Id"].values[0])
-            hashed_id = hashlib.md5(house_id.encode(encoding="UTF-8")).hexdigest()
-            # convert a hexadecimal (base-16) string into an integer
-            if int(hashed_id, 16) % 2:
-                predictions = self.model_a.predict(model_input.drop(["Id"], axis=1))
+            # Create a hash from all feature values concatenated
+            features_string = "".join(model_input.iloc[0].astype(str))
+            hashed_value = hashlib.md5(features_string.encode(encoding="UTF-8")).hexdigest()
+
+            # Use hash to determine which model to use (50/50 split)
+            if int(hashed_value, 16) % 2:
+                predictions = self.model_a.predict(model_input)
                 return {"Prediction": predictions[0], "model": "Model A"}
             else:
-                predictions = self.model_b.predict(model_input.drop(["Id"], axis=1))
+                predictions = self.model_b.predict(model_input)
                 return {"Prediction": predictions[0], "model": "Model B"}
         else:
             raise ValueError("Input must be a pandas DataFrame.")
