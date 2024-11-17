@@ -168,10 +168,6 @@ workspace.serving_endpoints.create(
 
 token = workspace.dbutils.notebook.entry_point.getDbutils().notebook().getContext().apiToken().get()
 host = spark.conf.get("spark.databricks.workspaceUrl")
-
-# COMMAND ----------
-
-id_list = preds_df["Id"]
 # COMMAND ----------
 
 start_time = time.time()

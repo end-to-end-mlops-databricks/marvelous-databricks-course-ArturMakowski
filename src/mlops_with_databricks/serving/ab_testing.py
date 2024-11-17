@@ -184,7 +184,7 @@ with mlflow.start_run(tags={"model_class": "B", "git_sha": git["git_sha"]}) as r
 
     # Log parameters, metrics, and the model to MLflow
     mlflow.log_param("model_type", "LightGBM with preprocessing")
-    mlflow.log_params(parameters_a)
+    mlflow.log_params(parameters_b)
     mlflow.log_metrics({"f1": f1, "accuracy": accuracy, "precision": precision, "recall": recall, "roc_auc": roc_auc})
     signature = infer_signature(model_input=X_test, model_output=y_pred)
 
@@ -232,7 +232,7 @@ class AdClickModelWrapper(mlflow.pyfunc.PythonModel):
     def predict(self, context, model_input):
         if isinstance(model_input, pd.DataFrame):
             # Create a hash from all feature values concatenated
-            features_string = "".join(model_input.iloc[0].astype(str))
+            features_string = "".join(model_input[sorted(model_input.columns)].iloc[0].astype(str))
             hashed_value = hashlib.md5(features_string.encode(encoding="UTF-8")).hexdigest()
 
             # Use hash to determine which model to use (50/50 split)
