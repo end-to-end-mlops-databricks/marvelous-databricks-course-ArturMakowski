@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %pip install ../housing_price-0.0.1-py3-none-any.whl
+# MAGIC %pip install --force-reinstall "/Volumes/mlops_students/armak58/packages/mlops_with_databricks-0.0.1-py3-none-any.whl[dev]"
 
 # COMMAND ----------
 # MAGIC %restart_python
