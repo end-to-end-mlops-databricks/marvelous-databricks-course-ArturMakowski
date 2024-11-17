@@ -1,7 +1,9 @@
 # Databricks notebook source
-# MAGIC %pip install ../housing_price-0.0.1-py3-none-any.whl
+# MAGIC %pip install --force-reinstall "/Volumes/mlops_students/armak58/packages/mlops_with_databricks-0.0.1-py3-none-any.whl[dev]"
+# MAGIC
 
 # COMMAND ----------
+
 # MAGIC %restart_python
 
 # COMMAND ----------
@@ -105,6 +107,7 @@ Each body should be list of json with columns
 """
 
 # COMMAND ----------
+
 start_time = time.time()
 
 model_serving_endpoint = f"https://{host}/serving-endpoints/{serving_endpoint_name}/invocations"
