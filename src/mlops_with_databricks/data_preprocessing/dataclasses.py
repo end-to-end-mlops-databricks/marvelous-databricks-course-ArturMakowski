@@ -58,6 +58,47 @@ class DatabricksConfig:
     schema_name: str = "armak58"
 
 
+@dataclass
+class FeatureTableConfig:
+    """Dataclass for the Feature Table configuration."""
+
+    feature_table_name: str = "adclick_preds"
+    online_table_name: str = "adclick_preds_online"
+
+
+@dataclass
+class ModelConfig:
+    """Dataclass for the Model configuration."""
+
+    model_name: str = "ad_click_model_basic"
+    model_version: int = 7
+
+
+@dataclass
+class FeatureServingConfig:
+    """Dataclass for the Serving configuration."""
+
+    serving_endpoint_name: str = "ad-click-feature-serving"
+
+
+@dataclass
+class ModelServingConfig:
+    """Dataclass for the Model Serving configuration."""
+
+    serving_endpoint_name: str = "ad-click-model-serving"
+
+
+@dataclass
+class ABTestConfig:
+    """Dataclass for the A/B Test configuration."""
+
+    learning_rate_a: float = 0.01
+    learning_rate_b: float = 0.001
+    n_estimators: int = 1000
+    max_depth_a: int = 10
+    max_depth_b: int = 100
+
+
 class LightGBMConfig(TypedDict):
     learning_rate: float
     n_estimators: int
