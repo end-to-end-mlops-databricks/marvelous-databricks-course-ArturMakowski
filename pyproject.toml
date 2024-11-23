@@ -17,6 +17,8 @@ dependencies = [
     "matplotlib>=3.9.2, <4",
     "databricks-feature-engineering>=0.6, <1",
     "pre-commit>=4.0.1",
+    "loguru>=0.7.2",
+    "build>=1.2.2.post1",
 ]
 
 [project.optional-dependencies]
