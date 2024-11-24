@@ -105,4 +105,4 @@ class LightGBMConfig(TypedDict):
     max_depth: int
 
 
-light_gbm_config = LightGBMConfig(learning_rate=0.001, n_estimators=200, max_depth=10)
+light_gbm_config = LightGBMConfig(learning_rate=0.1, n_estimators=400, max_depth=15)
