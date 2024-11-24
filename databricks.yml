@@ -43,7 +43,7 @@ resources:
 
       tasks:
         - task_key: "preprocessing"
-          job_cluster_key: "had-click-cluster"
+          job_cluster_key: "ad-click-cluster"
           spark_python_task:
             python_file: "src/mlops_with_databricks/pipeline/preprocess.py"
           libraries:
@@ -122,4 +122,4 @@ targets:
   prod:
     workspace:
       host: https://dbc-643c4c2b-d6c9.cloud.databricks.com
-      root_path: ${var.root_path}
+      root_path: /Workspace/Users/armak58@gmail.com/.bundle/${bundle.target}/${bundle.name}
